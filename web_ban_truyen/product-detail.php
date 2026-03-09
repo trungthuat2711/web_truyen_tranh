@@ -2,7 +2,7 @@
 require "config/database.php";
 include "includes/header.php";
 
-if(isset($_GET['id'])){
+if (isset($_GET['id'])) {
     $id = $_GET['id'];
 }
 
@@ -53,24 +53,28 @@ $ten_loai = $loai['ten_loai'];
                         <span>Số lượng:</span>
 
                         <div class="quantity">
-                            <button class="qty-btn minus" style="border-right: 1px solid #ddd">-</button>
-                            <input id="quantity" type=" text" value="1">
-                            <button class="qty-btn plus" style="border-left: 1px solid #ddd">+</button>
+                            <button type="button" class="qty-btn minus" style="border-right: 1px solid #ddd">-</button>
+                            <input id="quantity" name="quantity" type="number" min="1" value="1">
+                            <button type="button" class="qty-btn plus" style="border-left: 1px solid #ddd">+</button>
                         </div>
                     </div>
 
-                    <form action="add-to-cart.php" method="POST">
-                        <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
-                        <input type="hidden" name="quantity" id="cart_quantity">
-                        <div class="product-buttons">
+                    <div class="product-buttons">
+                        <form action="add-to-cart.php" method="POST" id="form-add-cart" class="d-inline">
+                            <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
+                            <input type="hidden" name="quantity" id="qty-add-cart" value="1">
                             <button type="submit" class="btn-add">
                                 THÊM VÀO GIỎ HÀNG
                             </button>
-                            <button type="submit" name="buy_now" class="btn-buy">
-                                MUA NGAY
+                        </form>
+                        <form action="checkout-single.php" method="POST" id="form-buy-now" class="d-inline">
+                            <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
+                            <input type="hidden" name="quantity" id="qty-buy-now" value="1">
+                            <button type="submit" class="btn-buy">
+                                THANH TOÁN
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
 
                     <p class="hotline-detail">
                         Gọi đặt hàng:

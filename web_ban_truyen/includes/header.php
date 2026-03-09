@@ -20,6 +20,9 @@
     <!-- style css -->
     <link rel="stylesheet" href="assets/css/style.css">
 
+    <?php if (!empty($extraHead)) {
+        echo $extraHead;
+    } ?>
 
 </head>
 
@@ -45,9 +48,9 @@
                     style="white-space: nowrap;">
                     <!-- Search -->
                     <form class="d-flex w-100 w-lg-auto flex-lg-grow-1 mx-lg-3" method="GET"
-                        action="products.php?keyword=<?php echo $_GET['keyword'];?>" onsubmit="return checkSearch()">
-                        <?php if(isset($_GET['sort'])) { ?>
-                        <input type="hidden" name="sort" value="<?php echo $_GET['sort']; ?>">
+                        action="products.php" onsubmit="return checkSearch()">
+                        <?php if (isset($_GET['sort'])) { ?>
+                            <input type="hidden" name="sort" value="<?php echo $_GET['sort']; ?>">
                         <?php } ?>
                         <div class=" input-group">
                             <input class="form-control" type="search" name="keyword" placeholder="Tìm truyện...">
@@ -68,6 +71,12 @@
                         <li class="nav-item">
                             <a class="nav-link" href="cart.php">
                                 <i class="fa fa-cart-shopping" style="color: #eb7c26;"></i> Giỏ hàng
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="my_orders.php">
+                                <i class="fa fa-receipt" style="color: #eb7c26;"></i> Đơn hàng của tôi
                             </a>
                         </li>
 
