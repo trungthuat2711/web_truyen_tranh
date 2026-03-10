@@ -177,8 +177,8 @@ function calculateCartTotals(array $productsById, ?array $cart = null): array
         $subtotal += $price * $qty;
     }
 
-    // Shipping logic: miễn phí nếu subtotal >= 200.000
-    $shipping = $subtotal === 0 ? 0 : ($subtotal >= 200000 ? 0 : 20000);
+    // Shipping logic: miễn phí nếu subtotal >= 250.000
+    $shipping = $subtotal === 0 ? 0 : ($subtotal >= 250000 ? 0 : 20000);
     $vat = 0; // Không tính phí VAT
     $total = max(0, $subtotal + $shipping);
 

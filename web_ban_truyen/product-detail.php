@@ -71,7 +71,7 @@ $ten_loai = $loai['ten_loai'];
                             <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
                             <input type="hidden" name="quantity" id="qty-buy-now" value="1">
                             <button type="submit" class="btn-buy">
-                                THANH TOÁN
+                                MUA NGAY
                             </button>
                         </form>
                     </div>

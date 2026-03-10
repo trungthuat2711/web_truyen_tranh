@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/cart_functions.php';
+$headerFlash = getFlash();
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -94,3 +98,9 @@
     </nav>
 
     <div class="container mt-4">
+    <?php if (!empty($headerFlash)): ?>
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        <?php echo htmlspecialchars($headerFlash); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    </div>
+    <?php endif; ?>

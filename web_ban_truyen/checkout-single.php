@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Trang thanh toán cho 1 sản phẩm duy nhất (từ nút MUA NGAY / Thanh toán trên trang chi tiết sản phẩm).
  * Không sử dụng giỏ hàng.
@@ -27,7 +28,7 @@ if (!$product) {
 
 $price = (float)$product['gia'];
 $subtotal = $price * $quantity;
-$shipping = $subtotal >= 200000 ? 0 : 20000;
+$shipping = $subtotal >= 250000 ? 0 : 20000;
 $total = $subtotal + $shipping;
 
 $errors = [];
@@ -68,11 +69,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     }
 
     if (empty($errors)) {
-        $total = ($price * $quantity) + ($price * $quantity >= 200000 ? 0 : 20000);
+        $total = ($price * $quantity) + ($price * $quantity >= 250000 ? 0 : 20000);
         $paymentMethod = strtoupper($values['payment']);
 
-        $stmt = $conn->prepare("INSERT INTO don_hang (ten_khach, so_dien_thoai, dia_chi_giao, tong_tien, phuong_thuc_thanh_toan, trang_thai) VALUES (?, ?, ?, ?, ?, 'cho_xac_nhan')");
-        $stmt->bind_param('sssds', $values['fullname'], $values['phone'], $values['address'], $total, $paymentMethod);
+        $stmt = $conn->prepare("INSERT INTO don_hang (ten_khach, so_dien_thoai, dia_chi_giao, email, ghi_chu, tong_tien, phuong_thuc_thanh_toan, trang_thai) VALUES (?, ?, ?, ?, ?, ?, ?, 'cho_xac_nhan')");
+        $stmt->bind_param('sssssds', $values['fullname'], $values['phone'], $values['address'], $values['email'], $values['notes'], $total, $paymentMethod);
 
         if ($stmt->execute()) {
             $orderId = $conn->insert_id;
@@ -224,7 +225,7 @@ include __DIR__ . '/includes/header.php';
                 </div>
 
                 <div class="small text-muted text-center mt-3">
-                    Miễn phí vận chuyển cho đơn hàng từ 200.000đ.
+                    Miễn phí vận chuyển cho đơn hàng từ 250.000đ.
                 </div>
             </div>
         </div>

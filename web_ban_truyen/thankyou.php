@@ -18,7 +18,7 @@ $items = [];
 
 if ($orderId > 0) {
     $stmt = $conn->prepare(
-        'SELECT ma_don, ten_khach, so_dien_thoai, dia_chi_giao, tong_tien, phuong_thuc_thanh_toan, trang_thai, ngay_dat FROM don_hang WHERE ma_don = ?'
+        'SELECT ma_don, ten_khach, so_dien_thoai, dia_chi_giao, email, ghi_chu, tong_tien, phuong_thuc_thanh_toan, trang_thai, ngay_dat FROM don_hang WHERE ma_don = ?'
     );
     $stmt->bind_param('i', $orderId);
     $stmt->execute();
@@ -36,28 +36,13 @@ if ($orderId > 0) {
         $stmt->execute();
         $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
-    }
-}
 
-function formatVnd($value)
-{
-    return number_format((float)$value, 0, ',', '.') . ' đ';
-}
-
-function formatDateTime($dateTime)
-{
-    return date('d/m/Y H:i', strtotime($dateTime));
-}
-
-function paymentLabel($value)
-{
-    switch (strtoupper($value)) {
-        case 'COD':
-            return 'Thanh toán khi nhận hàng';
-        case 'BANK':
-            return 'Chuyển khoản ngân hàng';
-        default:
-            return 'Chưa xác định';
+        // Tính toán phụ phí (phí vận chuyển) tương ứng với logic tại checkout
+        $subtotal = 0;
+        foreach ($items as $item) {
+            $subtotal += (float)$item['gia_tai_thoi_diem_dat'] * (int)$item['so_luong'];
+        }
+        $shipping = $subtotal === 0 ? 0 : ($subtotal >= 250000 ? 0 : 20000);
     }
 }
 
@@ -73,6 +58,28 @@ function statusLabel($status)
     return $map[$key] ?? ucfirst(str_replace('_', ' ', $status));
 }
 
+function paymentLabel($value)
+{
+    switch (strtoupper($value)) {
+        case 'COD':
+            return 'Thanh toán khi nhận hàng';
+        case 'BANK':
+            return 'Chuyển khoản ngân hàng';
+        default:
+            return 'Chưa xác định';
+    }
+}
+
+function formatVnd($value)
+{
+    return number_format((float)$value, 0, ',', '.') . ' đ';
+}
+
+function formatDateTime($dateTime)
+{
+    return date('H:i d/m/Y', strtotime($dateTime));
+}
+
 $extraHead = '<link rel="stylesheet" href="assets/css/checkout.css">';
 include __DIR__ . '/includes/header.php';
 ?>
@@ -84,7 +91,7 @@ include __DIR__ . '/includes/header.php';
 
     <h1 class="success-title">Đặt hàng thành công!</h1>
     <p class="success-text">
-        Cảm ơn bạn đã tin tưởng và mua hàng tại Shop Truyện Tranh. Đơn hàng của bạn đã được xác nhận!
+        Cảm ơn bạn đã tin tưởng và mua hàng tại CTU COMIC STORE. Đơn hàng của bạn đã được xác nhận!
     </p>
 
     <?php if (!empty($order)): ?>
@@ -102,28 +109,34 @@ include __DIR__ . '/includes/header.php';
                 <span class="order-info-value"><?php echo statusLabel($order['trang_thai']); ?></span>
             </div>
             <div class="order-info-row">
-                <span class="order-info-label">Phương thức thanh toán</span>
-                <span class="order-info-value"><?php echo paymentLabel($order['phuong_thuc_thanh_toan']); ?></span>
-            </div>
-            <div class="order-info-row">
-                <span class="order-info-label">Tổng tiền</span>
-                <span class="order-info-value"><?php echo formatVnd($order['tong_tien']); ?></span>
-            </div>
-            <div class="order-info-row">
                 <span class="order-info-label">Họ và tên</span>
                 <span class="order-info-value"><?php echo htmlspecialchars($order['ten_khach']); ?></span>
-            </div>
-            <div class="order-info-row">
-                <span class="order-info-label">Số điện thoại</span>
-                <span class="order-info-value"><?php echo htmlspecialchars($order['so_dien_thoai']); ?></span>
             </div>
             <div class="order-info-row">
                 <span class="order-info-label">Địa chỉ giao hàng</span>
                 <span class="order-info-value"><?php echo htmlspecialchars($order['dia_chi_giao']); ?></span>
             </div>
             <div class="order-info-row">
+                <span class="order-info-label">Số điện thoại</span>
+                <span class="order-info-value"><?php echo htmlspecialchars($order['so_dien_thoai']); ?></span>
+            </div>
+            <div class="order-info-row">
                 <span class="order-info-label">Email</span>
-                <span class="order-info-value"><?php echo htmlspecialchars($orderEmail ?? '—'); ?></span>
+                <span class="order-info-value"><?php echo htmlspecialchars($order['email'] ?? $orderEmail ?? '—'); ?></span>
+            </div>
+            <div class="order-info-row">
+                <span class="order-info-label">Phương thức thanh toán</span>
+                <span class="order-info-value"><?php echo paymentLabel($order['phuong_thuc_thanh_toan']); ?></span>
+            </div>
+            <?php if (!empty($order['ghi_chu'])): ?>
+                <div class="order-info-row">
+                    <span class="order-info-label">Ghi chú</span>
+                    <span class="order-info-value"><?php echo nl2br(htmlspecialchars($order['ghi_chu'])); ?></span>
+                </div>
+            <?php endif; ?>
+            <div class="order-info-row">
+                <span class="order-info-label">Tổng tiền</span>
+                <span class="order-info-value"><?php echo formatVnd($order['tong_tien']); ?></span>
             </div>
         </div>
 
@@ -135,9 +148,9 @@ include __DIR__ . '/includes/header.php';
                 <div class="list-group">
                     <?php foreach ($items as $item): ?>
                         <div class="list-group-item d-flex justify-content-between align-items-start flex-wrap">
-                            <div class="me-3">
+                            <div class="me-3 text-start">
                                 <div class="fw-semibold"><?php echo htmlspecialchars($item['ten_sp'] ?? 'Sản phẩm'); ?></div>
-                                <div class="text-muted" style="font-size:0.9rem;">Số lượng: <?php echo (int)$item['so_luong']; ?></div>
+                                <div class="text-muted text-start" style="font-size:0.9rem;">Số lượng: <?php echo (int)$item['so_luong']; ?></div>
                             </div>
                             <div class="text-end">
                                 <div class="fw-semibold"><?php echo formatVnd($item['gia_tai_thoi_diem_dat'] * $item['so_luong']); ?></div>
@@ -145,15 +158,19 @@ include __DIR__ . '/includes/header.php';
                             </div>
                         </div>
                     <?php endforeach; ?>
+                <div class="list-group-item d-flex justify-content-between align-items-start flex-wrap">
+                    <span class="fw-semibold">Phí vận chuyển</span>
+                    <span class="fw-semibold"><?php echo formatVnd($shipping ?? 0); ?></span>
+                </div>
                 </div>
             <?php endif; ?>
         </div>
 
         <?php if (strtoupper($order['phuong_thuc_thanh_toan'] ?? '') === 'BANK'): ?>
-        <?php
+            <?php
             $totalAmount = (int)round((float)$order['tong_tien']);
             $transferContent = $transferContentFormat . ' ' . (int)$order['ma_don'];
-            $description = strtoupper(preg_replace('/[^a-zA-Z0-9\s]/', '', $transferContent)); // VietQR: không dấu, IN HOA
+            $description = strtoupper(preg_replace('/[^a-zA-Z0-9\s]/', '', $transferContent));
             $addInfo = rawurlencode(mb_substr($description, 0, 50));
             $accountNameEncoded = rawurlencode($bankConfig['account_name']);
             $qrUrl = sprintf(
@@ -164,15 +181,16 @@ include __DIR__ . '/includes/header.php';
                 $addInfo,
                 $accountNameEncoded
             );
-        ?>
-        <div class="bank-qr-box mb-4">
-            <h6 class="mb-3"><i class="fas fa-qrcode me-2"></i>Quét mã QR để chuyển khoản</h6>
-            <div class="bank-qr-placeholder">
-                <img src="<?php echo htmlspecialchars($qrUrl); ?>" alt="QR chuyển khoản ngân hàng" class="img-fluid" style="max-width: 300px;">
-                <p class="mt-2 small text-muted mb-0">Số tiền: <strong><?php echo formatVnd($order['tong_tien']); ?></strong></p>
-                <p class="small text-muted mb-0">Nội dung chuyển khoản: <strong><?php echo htmlspecialchars($transferContent); ?></strong></p>
+            ?>
+            <div class="bank-qr-box mb-4">
+                <h6 class="mb-3"><i class="fas fa-qrcode me-2"></i>Quét mã QR để chuyển khoản</h6>
+                <span>Vui lòng thanh toán trong vòng 24h sau khi đặt hàng,<br>nếu không đơn hàng sẽ bị hủy sau 24h.<br><br></span>
+                <div class="bank-qr-placeholder">
+                    <img src="<?php echo htmlspecialchars($qrUrl); ?>" alt="QR chuyển khoản ngân hàng" class="img-fluid" style="max-width: 300px;">
+                    <p class="mt-2 small text-muted mb-0">Số tiền: <strong><?php echo formatVnd($order['tong_tien']); ?></strong></p>
+                    <p class="small text-muted mb-0">Nội dung chuyển khoản: <strong><?php echo htmlspecialchars($transferContent); ?></strong></p>
+                </div>
             </div>
-        </div>
         <?php endif; ?>
 
         <div class="button-group">

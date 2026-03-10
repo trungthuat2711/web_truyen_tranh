@@ -91,7 +91,7 @@ function formatVnd($value) {
 }
 
 function formatDate($date) {
-    return date('d/m/Y H:i', strtotime($date));
+    return date('H:i d/m/Y', strtotime($date));
 }
 
 function statusBadge($status) {
@@ -115,7 +115,6 @@ include __DIR__ . '/includes/header.php';
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0 fw-bold">Đơn hàng của tôi</h3>
-        <a href="index.php" class="btn btn-sm btn-light">Tiếp tục mua sắm</a>
     </div>
 
     <form method="get" class="row gy-2 gx-2 align-items-center mb-4">

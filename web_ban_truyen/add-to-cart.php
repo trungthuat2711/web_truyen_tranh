@@ -28,5 +28,9 @@ $stmt->close();
 
 addToCart($productId, $quantity);
 flash('Đã thêm sản phẩm vào giỏ hàng.');
-header('Location: cart.php');
+$referer = $_SERVER['HTTP_REFERER'] ?? 'index.php';
+if (empty($referer) || parse_url($referer, PHP_URL_HOST) !== ($_SERVER['HTTP_HOST'] ?? null)) {
+    $referer = 'index.php';
+}
+header('Location: ' . $referer);
 exit;

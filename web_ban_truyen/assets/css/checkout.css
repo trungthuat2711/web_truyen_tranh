@@ -322,6 +322,16 @@ body {
     padding: 10px 20px;
 }
 
+.order-items h5 {
+    text-align: center;
+}
+
+.order-items .list-group,
+.order-items .list-group-item .me-3,
+.order-items .list-group-item .me-3 * {
+    text-align: left !important;
+}
+
 /* Hộp QR chuyển khoản ngân hàng */
 .bank-qr-box {
     text-align: center;

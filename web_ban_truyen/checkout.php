@@ -77,8 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $total = $totals['total'];
         $paymentMethod = strtoupper($values['payment']);
 
-        $stmt = $conn->prepare("INSERT INTO don_hang (ten_khach, so_dien_thoai, dia_chi_giao, tong_tien, phuong_thuc_thanh_toan, trang_thai) VALUES (?, ?, ?, ?, ?, 'cho_xac_nhan')");
-        $stmt->bind_param('sssds', $values['fullname'], $values['phone'], $values['address'], $total, $paymentMethod);
+        $stmt = $conn->prepare("INSERT INTO don_hang (ten_khach, so_dien_thoai, dia_chi_giao, email, ghi_chu, tong_tien, phuong_thuc_thanh_toan, trang_thai) VALUES (?, ?, ?, ?, ?, ?, ?, 'cho_xac_nhan')");
+        $stmt->bind_param('sssssds', $values['fullname'], $values['phone'], $values['address'], $values['email'], $values['notes'], $total, $paymentMethod);
 
         if ($stmt->execute()) {
             $orderId = $conn->insert_id;
@@ -269,7 +269,7 @@ include __DIR__ . '/includes/header.php';
                         </div>
 
                         <div class="small text-muted text-center mt-3">
-                            Miễn phí vận chuyển cho đơn hàng từ 200,000đ.
+                            Miễn phí vận chuyển cho đơn hàng từ 250,000đ.
                         </div>
                     <?php endif; ?>
                 </div>

@@ -72,7 +72,6 @@ include __DIR__ . '/includes/header.php';
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0 fw-bold">Giỏ hàng</h3>
-        <a href="index.php" class="btn btn-sm btn-light">Tiếp tục mua sắm</a>
     </div>
 
     <div class="row g-4">
@@ -105,34 +104,34 @@ include __DIR__ . '/includes/header.php';
                             $img = htmlspecialchars($product['anh_sp'] ?: 'default.jpg');
                             $lineTotal = $price * $qty;
                         ?>
-                            <div class="d-flex align-items-center gap-3 p-3 rounded mb-2 product-row">
-                                <img class="product-img" src="uploads/<?php echo $img; ?>" alt="<?php echo $name; ?>">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
+                            <div class="d-flex align-items-start gap-2 gap-lg-3 p-3 rounded mb-2 product-row">
+                                <img class="product-img flex-shrink-0" src="uploads/<?php echo $img; ?>" alt="<?php echo $name; ?>">
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                                        <div class="min-w-0">
                                             <div class="fw-semibold product-name"><?php echo $name; ?></div>
                                             <div class="small text-muted">Mã: <?php echo $id; ?></div>
                                         </div>
-                                        <div class="text-end">
+                                        <div class="flex-shrink-0">
                                             <div class="fw-bold product-price"><?php echo number_format($price); ?>đ</div>
                                         </div>
                                     </div>
 
-                                    <div class="d-flex align-items-center gap-2 mt-3">
-                                        <div class="input-group" style="width:140px">
-                                            <button type="button" class="btn btn-outline-secondary qty-btn dec" onclick="handleQtyChange(<?php echo $id; ?>, -1)"><i class="fa fa-minus"></i></button>
-                                            <input type="number" class="form-control text-center qty-input" name="qty[<?php echo $id; ?>]" value="<?php echo $qty; ?>" min="1" style="max-width:60px;border-radius:0" onchange="scheduleCartUpdate()">
-                                            <button type="button" class="btn btn-outline-secondary qty-btn inc" onclick="handleQtyChange(<?php echo $id; ?>, 1)"><i class="fa fa-plus"></i></button>
+                                    <div class="d-flex align-items-center gap-2 mt-2 mt-lg-3 cart-bottom-row">
+                                        <div class="input-group cart-qty-group">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm qty-btn dec" onclick="handleQtyChange(<?php echo $id; ?>, -1)"><i class="fa fa-minus"></i></button>
+                                            <input type="number" class="form-control form-control-sm text-center qty-input" name="qty[<?php echo $id; ?>]" value="<?php echo $qty; ?>" min="1" onchange="scheduleCartUpdate()">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm qty-btn inc" onclick="handleQtyChange(<?php echo $id; ?>, 1)"><i class="fa fa-plus"></i></button>
                                         </div>
 
-                                        <div class="ms-auto text-end">
+                                        <div class="cart-line-total fw-bold line-total">
                                             <div class="small text-muted">Thành tiền</div>
                                             <div class="fw-bold line-total"><?php echo number_format($lineTotal); ?>đ</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="ms-3">
+                                <div class="cart-remove flex-shrink-0">
                                     <a href="cart.php?remove=<?php echo $id; ?>" class="btn btn-light btn-sm remove-btn" title="Xóa"><i class="fa fa-trash text-danger"></i></a>
                                 </div>
                             </div>
@@ -172,8 +171,6 @@ include __DIR__ . '/includes/header.php';
                         <a href="checkout.php" class="primary-btn d-flex justify-content-center align-items-center" style="text-decoration: none;">
                             Tiến hành thanh toán
                         </a>
-                        <div class="small text-muted">Phương thức thanh toán và vận chuyển sẽ được chọn ở bước tiếp theo.</div>
-
                     <?php endif; ?>
                 </div>
 

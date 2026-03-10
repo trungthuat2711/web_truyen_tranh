@@ -80,12 +80,14 @@ CREATE TABLE `don_hang` (
   `ten_khach` varchar(255) DEFAULT NULL,
   `so_dien_thoai` varchar(20) DEFAULT NULL,
   `dia_chi_giao` text DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
   `tong_tien` decimal(10,2) DEFAULT NULL,
   `phuong_thuc_thanh_toan` varchar(50) DEFAULT 'COD',
   `trang_thai` varchar(50) DEFAULT 'cho_xac_nhan',
   `ngay_dat` datetime DEFAULT current_timestamp(),
   `ngay_duyet_don` datetime DEFAULT NULL,
-  `ngay_hoan_tat` datetime DEFAULT NULL
+  `ngay_hoan_tat` datetime DEFAULT NULL,
+  `ghi_chu` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
