@@ -1,0 +1,69 @@
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f5f5f5;
+}
+
+.container{
+    width:90%;
+    margin:auto;
+}
+
+/* FORM LOGIN / REGISTER */
+
+.auth-box{
+    max-width:500px;
+    margin:120px auto;
+}
+
+.auth-card{
+    background:rgba(255,255,255,0.95);
+    padding:35px;
+    border-radius:10px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.auth-title{
+    text-align:center;
+    margin-bottom:25px;
+    font-weight:bold;
+    font-size:26px;
+}
+
+.auth-link{
+    text-align:center;
+    margin-top:20px;
+}
+
+.auth-link a{
+    text-decoration:none;
+    font-weight:500;
+}
+
+.auth-link a:hover{
+    text-decoration:underline;
+}
+
+/* FOOTER */
+
+footer{
+    background:#222;
+    color:white;
+    text-align:center;
+    padding:20px 0;
+    margin-top:40px;
+}
+
+.login-bg{
+    background-image:url('../../uploads/Best-Manga-of-All-Time.jpg');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+}
+
+.register-bg{
+    background-image:url('../../uploads/jw-5d1b565a3d9964.76324660.jpeg');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+}
