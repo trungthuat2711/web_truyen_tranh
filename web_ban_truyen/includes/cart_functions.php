@@ -6,12 +6,41 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Cookie settings
+// Cookie settings (base name, actual cookie key sẽ phụ thuộc tài khoản)
 if (!defined('CART_COOKIE_NAME')) {
     define('CART_COOKIE_NAME', 'shop_cart');
 }
 if (!defined('CART_COOKIE_TTL')) {
     define('CART_COOKIE_TTL', 86400 * 7);
+}
+
+/**
+ * Tạo key giỏ hàng theo tài khoản (user_X) hoặc khách (guest_sessionid)
+ *
+ * @return string
+ */
+function getCartKey(): string
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!empty($_SESSION['user']) && isset($_SESSION['user']['ma_tk'])) {
+        return 'user_' . (int)$_SESSION['user']['ma_tk'];
+    }
+
+    return 'guest_' . session_id();
+}
+
+/**
+ * Tên cookie thật sự dùng để lưu giỏ hàng (theo từng tài khoản/khách)
+ *
+ * @return string
+ */
+function getCartCookieName(): string
+{
+    // Vẫn giữ CART_COOKIE_NAME để tương thích, nhưng thêm hậu tố theo key giỏ hàng
+    return CART_COOKIE_NAME . '_' . getCartKey();
 }
 
 /**
@@ -22,27 +51,33 @@ if (!defined('CART_COOKIE_TTL')) {
  */
 function getCart(): array
 {
-    if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
+    $key = getCartKey();
+
+    if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts'])) {
+        $_SESSION['carts'] = [];
+    }
+    if (!isset($_SESSION['carts'][$key]) || !is_array($_SESSION['carts'][$key])) {
+        $_SESSION['carts'][$key] = [];
     }
 
-    // If session is empty but cookie exists, try restore
-    if (empty($_SESSION['cart']) && isset($_COOKIE[CART_COOKIE_NAME])) {
-        $data = json_decode($_COOKIE[CART_COOKIE_NAME], true);
+    // Nếu giỏ trong session đang rỗng nhưng có cookie thì khôi phục
+    $cookieName = getCartCookieName();
+    if (empty($_SESSION['carts'][$key]) && isset($_COOKIE[$cookieName])) {
+        $data = json_decode($_COOKIE[$cookieName], true);
         if (is_array($data)) {
-            $_SESSION['cart'] = $data;
+            $_SESSION['carts'][$key] = $data;
         }
     }
 
     // Ensure consistent structure
-    $_SESSION['cart'] = array_values(array_map(function ($item) {
+    $_SESSION['carts'][$key] = array_values(array_map(function ($item) {
         return [
             'id' => isset($item['id']) ? (int)$item['id'] : 0,
             'qty' => isset($item['qty']) ? max(1, (int)$item['qty']) : 1,
         ];
-    }, $_SESSION['cart']));
+    }, $_SESSION['carts'][$key]));
 
-    return $_SESSION['cart'];
+    return $_SESSION['carts'][$key];
 }
 
 /**
@@ -53,6 +88,8 @@ function getCart(): array
  */
 function saveCart(array $cart): void
 {
+    $key = getCartKey();
+
     // Normalize structure and drop invalid entries
     $cart = array_values(array_filter(array_map(function ($item) {
         $id = isset($item['id']) ? (int)$item['id'] : 0;
@@ -63,8 +100,14 @@ function saveCart(array $cart): void
         return ['id' => $id, 'qty' => $qty];
     }, $cart)));
 
-    $_SESSION['cart'] = $cart;
-    setcookie(CART_COOKIE_NAME, json_encode($cart), time() + CART_COOKIE_TTL, '/', '', false, true);
+    if (!isset($_SESSION['carts']) || !is_array($_SESSION['carts'])) {
+        $_SESSION['carts'] = [];
+    }
+
+    $_SESSION['carts'][$key] = $cart;
+
+    $cookieName = getCartCookieName();
+    setcookie($cookieName, json_encode($cart), time() + CART_COOKIE_TTL, '/', '', false, true);
 }
 
 /**
@@ -150,7 +193,19 @@ function removeFromCart(int $productId): void
  */
 function clearCart(): void
 {
-    saveCart([]);
+    $key = getCartKey();
+
+    // Xóa trong session
+    if (isset($_SESSION['carts'][$key])) {
+        $_SESSION['carts'][$key] = [];
+    }
+
+    // Xóa cookie tương ứng
+    $cookieName = getCartCookieName();
+    if (isset($_COOKIE[$cookieName])) {
+        setcookie($cookieName, '', time() - 3600, '/', '', false, true);
+        unset($_COOKIE[$cookieName]);
+    }
 }
 
 /**

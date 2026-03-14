@@ -85,7 +85,7 @@ include __DIR__ . '/includes/header.php';
                             </svg>
                             <h5 class="mt-3">Giỏ hàng của bạn trống</h5>
                             <p class="text-muted">Hãy thêm vài sản phẩm yêu thích vào giỏ nhé.</p>
-                            <a href="index.php" class="btn btn-outline-primary">Tiếp tục mua sắm</a>
+                            <a href="products.php" class="btn btn-outline-primary">Tiếp tục mua sắm</a>
                         </div>
                     </div>
                 <?php else: ?>

@@ -1,15 +1,25 @@
 <?php
 require __DIR__ . '/config/database.php';
+require __DIR__ . '/check_login.php';
 require __DIR__ . '/includes/cart_functions.php';
+
+// Đảm bảo chỉ xem được đơn hàng của chính tài khoản đăng nhập
+if (empty($_SESSION['user']) || !isset($_SESSION['user']['ma_tk'])) {
+    header('Location: login.php');
+    exit;
+}
+
+$currentUserId = (int)$_SESSION['user']['ma_tk'];
 
 $q = trim($_GET['q'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 10;
 $offset = ($page - 1) * $perPage;
 
-$where = 'WHERE 1=1';
-$params = [];
-$types = '';
+// Mặc định lọc theo ma_kh = tài khoản hiện tại
+$where = 'WHERE o.ma_kh = ?';
+$params = [$currentUserId];
+$types = 'i';
 
 if ($q !== '') {
     $orderId = ctype_digit($q) ? (int)$q : 0;

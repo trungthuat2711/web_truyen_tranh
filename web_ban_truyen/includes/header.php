@@ -1,6 +1,15 @@
 <?php
 require_once __DIR__ . '/cart_functions.php';
 $headerFlash = getFlash();
+
+// Tính tổng số lượng sản phẩm trong giỏ để hiển thị badge trên icon
+$headerCart = getCart();
+$headerCartCount = 0;
+if (!empty($headerCart)) {
+    foreach ($headerCart as $item) {
+        $headerCartCount += isset($item['qty']) ? (int)$item['qty'] : 0;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -73,8 +82,14 @@ $headerFlash = getFlash();
                     <!-- Menu -->
                     <ul class="navbar-nav d-flex flex-row gap-3">
                         <li class="nav-item">
-                            <a class="nav-link" href="cart.php">
-                                <i class="fa fa-cart-shopping" style="color: #eb7c26;"></i> Giỏ hàng
+                            <a class="nav-link cart-link" href="cart.php">
+                                <span class="cart-icon-wrapper">
+                                    <i class="fa fa-cart-shopping" style="color: #eb7c26;"></i>
+                                    <?php if ($headerCartCount > 0): ?>
+                                        <span class="cart-badge"><?php echo $headerCartCount; ?></span>
+                                    <?php endif; ?>
+                                </span>
+                                <span class="ms-1">Giỏ hàng</span>
                             </a>
                         </li>
 
@@ -85,8 +100,9 @@ $headerFlash = getFlash();
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="login.php">
-                                <i class="fa fa-user" style="color: #eb7c26;"></i> Đăng nhập
+                            <a class="nav-link" href="<?php echo isset($_SESSION['user']) ? 'logout.php' : 'login.php'; ?>">
+                                <i class="fa fa-user" style="color: #eb7c26;"></i>
+                                <?php echo isset($_SESSION['user']) ? 'Đăng xuất' : 'Đăng nhập'; ?>
                             </a>
                         </li>
                     </ul>

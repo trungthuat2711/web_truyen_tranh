@@ -4,6 +4,7 @@
  * Trang thanh toán cho 1 sản phẩm duy nhất (từ nút MUA NGAY / Thanh toán trên trang chi tiết sản phẩm).
  * Không sử dụng giỏ hàng.
  */
+require __DIR__ . '/check_login.php';
 require __DIR__ . '/config/database.php';
 require __DIR__ . '/includes/cart_functions.php';
 
@@ -72,8 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
         $total = ($price * $quantity) + ($price * $quantity >= 250000 ? 0 : 20000);
         $paymentMethod = strtoupper($values['payment']);
 
-        $stmt = $conn->prepare("INSERT INTO don_hang (ten_khach, so_dien_thoai, dia_chi_giao, email, ghi_chu, tong_tien, phuong_thuc_thanh_toan, trang_thai) VALUES (?, ?, ?, ?, ?, ?, ?, 'cho_xac_nhan')");
-        $stmt->bind_param('sssssds', $values['fullname'], $values['phone'], $values['address'], $values['email'], $values['notes'], $total, $paymentMethod);
+        // Gắn ma_kh nếu người dùng đã đăng nhập
+        $currentUserId = null;
+        if (!empty($_SESSION['user']) && isset($_SESSION['user']['ma_tk'])) {
+            $currentUserId = (int)$_SESSION['user']['ma_tk'];
+        }
+
+        $stmt = $conn->prepare("INSERT INTO don_hang (ma_kh, ten_khach, so_dien_thoai, dia_chi_giao, email, ghi_chu, tong_tien, phuong_thuc_thanh_toan, trang_thai) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'cho_xac_nhan')");
+        $stmt->bind_param('isssssds', $currentUserId, $values['fullname'], $values['phone'], $values['address'], $values['email'], $values['notes'], $total, $paymentMethod);
 
         if ($stmt->execute()) {
             $orderId = $conn->insert_id;

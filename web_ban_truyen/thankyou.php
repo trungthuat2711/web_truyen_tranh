@@ -194,7 +194,7 @@ include __DIR__ . '/includes/header.php';
         <?php endif; ?>
 
         <div class="button-group">
-            <a href="index.php" class="btn btn-primary">
+            <a href="products.php" class="btn btn-primary">
                 <i class="fas fa-shopping-bag me-2"></i>Tiếp tục mua sắm
             </a>
             <a href="my_orders.php?q=<?php echo (int)($order['ma_don'] ?? 0); ?>" class="btn btn-outline-primary">
@@ -206,7 +206,7 @@ include __DIR__ . '/includes/header.php';
             Không tìm thấy thông tin đơn hàng. Vui lòng kiểm tra lại đường dẫn hoặc quay về cửa hàng.
         </p>
         <div class="button-group">
-            <a href="index.php" class="btn btn-primary">
+            <a href="products.php" class="btn btn-primary">
                 <i class="fas fa-shopping-bag me-2"></i>Tiếp tục mua sắm
             </a>
             <a href="my_orders.php" class="btn btn-outline-primary">
