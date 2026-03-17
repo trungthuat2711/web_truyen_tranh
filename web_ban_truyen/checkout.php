@@ -168,14 +168,14 @@ include __DIR__ . '/includes/header.php';
                             <div class="row">
                                 <div class="col-md-6 form-group">
                                     <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                    <input type="text" name="fullname" class="form-control <?php echo isset($errors['fullname']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($values['fullname']); ?>" required>
+                                    <input type="text" name="fullname" class="form-control form-ctrl-qty <?php echo isset($errors['fullname']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($values['fullname']); ?>" required>
                                     <?php if (isset($errors['fullname'])): ?>
                                         <div class="invalid-feedback"><?php echo htmlspecialchars($errors['fullname']); ?></div>
                                     <?php endif; ?>
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" name="email" class="form-control <?php echo isset($errors['email']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($values['email']); ?>" required>
+                                    <input type="email" name="email" class="form-control form-ctrl-qty <?php echo isset($errors['email']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($values['email']); ?>" required>
                                     <?php if (isset($errors['email'])): ?>
                                         <div class="invalid-feedback"><?php echo htmlspecialchars($errors['email']); ?></div>
                                     <?php endif; ?>
@@ -185,14 +185,14 @@ include __DIR__ . '/includes/header.php';
                             <div class="row">
                                 <div class="col-md-6 form-group">
                                     <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                    <input type="tel" name="phone" class="form-control <?php echo isset($errors['phone']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($values['phone']); ?>" pattern="[0-9]{10,}" required>
+                                    <input type="tel" name="phone" class="form-control form-ctrl-qty <?php echo isset($errors['phone']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($values['phone']); ?>" pattern="[0-9]{10,}" required>
                                     <?php if (isset($errors['phone'])): ?>
                                         <div class="invalid-feedback"><?php echo htmlspecialchars($errors['phone']); ?></div>
                                     <?php endif; ?>
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                                    <input type="text" name="address" class="form-control <?php echo isset($errors['address']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($values['address']); ?>" required>
+                                    <input type="text" name="address" class="form-control form-ctrl-qty <?php echo isset($errors['address']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($values['address']); ?>" required>
                                     <?php if (isset($errors['address'])): ?>
                                         <div class="invalid-feedback"><?php echo htmlspecialchars($errors['address']); ?></div>
                                     <?php endif; ?>
@@ -201,7 +201,7 @@ include __DIR__ . '/includes/header.php';
 
                             <div class="form-group">
                                 <label class="form-label">Ghi chú đơn hàng</label>
-                                <textarea name="notes" class="form-control" rows="3"><?php echo htmlspecialchars($values['notes']); ?></textarea>
+                                <textarea name="notes" class="form-control form-ctrl-qty" rows="3"><?php echo htmlspecialchars($values['notes']); ?></textarea>
                             </div>
 
                             <div class="form-group">
@@ -233,7 +233,7 @@ include __DIR__ . '/includes/header.php';
 
                             <div class="d-grid mt-4">
                                 <button type="submit" class="primary-btn btn-lg">
-                                    <i class="fas fa-lock me-2"></i>Đặt hàng và thanh toán
+                                    <i class="fas fa-shopping-bag me-2"></i>Đặt hàng và thanh toán
                                 </button>
                             </div>
                         </div>

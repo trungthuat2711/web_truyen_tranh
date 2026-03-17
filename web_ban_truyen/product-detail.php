@@ -13,6 +13,7 @@ $ten_loai = $loai['ten_loai'];
 
 ?>
 <div class="row d-flex justify-content-center">
+    <!--  -->
     <div class="col-md-10">
 
         <div class="bg-white p-3 mb-5 product-detail">
@@ -68,7 +69,7 @@ $ten_loai = $loai['ten_loai'];
                             </button>
                         </form>
                         <form action="checkout-single.php" method="POST" id="form-buy-now" class="d-inline">
-                            <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
+                        <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
                             <input type="hidden" name="quantity" id="qty-buy-now" value="1">
                             <button type="submit" class="btn-buy">
                                 MUA NGAY
@@ -93,6 +94,31 @@ $ten_loai = $loai['ten_loai'];
 
                     </div>
 
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Giới thiệu sp -->
+    <div class="col-md-10">
+
+        <div class="bg-white p-3 mb-5 product-detail">
+
+            <div class="row">
+
+                <div class="col-md-12 text-center mt-3 mb-4">
+                    <p class="float-start fs-4 fw-bold">Giới thiệu sản phẩm</p>
+                </div>
+
+                <div class="col-md-12 text-center mb-2">
+                    <p class="fs-4 fw-bold introduce-title"><?php echo $row['ten_sp']; ?></p>
+                </div>
+
+                <div class="col-md-12 text-start">
+                    <p class="fs-6 lh-lg"><?php echo $row['mo_ta']; ?></p>
                 </div>
 
             </div>

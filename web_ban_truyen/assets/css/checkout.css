@@ -11,7 +11,7 @@
 body {
     background: var(--bg);
     color: var(--accent);
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .card {
@@ -21,19 +21,12 @@ body {
     box-shadow: 0 6px 18px rgba(17, 17, 17, 0.06);
 }
 
-.form-control,
-.form-select {
+.form-ctrl-qty{
     border: 1px solid rgba(34, 34, 34, 0.08);
     border-radius: 8px;
     padding: 10px 12px;
     font-size: 0.95rem;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: #222;
-    box-shadow: 0 0 0 0.2rem rgba(34, 34, 34, 0.1);
 }
 
 .form-label {
@@ -233,13 +226,11 @@ body {
     display: none;
 }
 
-.form-control.is-invalid,
-.form-select.is-invalid {
+.form-control.is-invalid{
     border-color: var(--danger);
 }
 
-.form-control.is-invalid:focus,
-.form-select.is-invalid:focus {
+.form-control.is-invalid:focus{
     border-color: var(--danger);
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.1);
 }
@@ -330,6 +321,10 @@ body {
 .order-items .list-group-item .me-3,
 .order-items .list-group-item .me-3 * {
     text-align: left !important;
+}
+
+.status-label{
+    color: rgba(var(--bs-warning-rgb));
 }
 
 /* Hộp QR chuyển khoản ngân hàng */

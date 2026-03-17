@@ -97,16 +97,16 @@ include __DIR__ . '/includes/header.php';
     <?php if (!empty($order)): ?>
         <div class="order-info">
             <div class="order-info-row">
+                <span class="order-info-label">Trạng thái</span>
+                <span class="order-info-value status-label"><?php echo statusLabel($order['trang_thai']); ?></span>
+            </div>
+            <div class="order-info-row">
                 <span class="order-info-label">Mã đơn hàng</span>
                 <span class="order-info-value">#<?php echo htmlspecialchars($order['ma_don']); ?></span>
             </div>
             <div class="order-info-row">
                 <span class="order-info-label">Ngày đặt hàng</span>
                 <span class="order-info-value"><?php echo formatDateTime($order['ngay_dat']); ?></span>
-            </div>
-            <div class="order-info-row">
-                <span class="order-info-label">Trạng thái</span>
-                <span class="order-info-value"><?php echo statusLabel($order['trang_thai']); ?></span>
             </div>
             <div class="order-info-row">
                 <span class="order-info-label">Họ và tên</span>

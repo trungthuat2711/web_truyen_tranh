@@ -14,6 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             if ($quantity <= 0) {
                 removeFromCart($productId);
             } else {
+                // Giới hạn số lượng hợp lệ
+                if ($quantity > 100) {
+                    $quantity = 100;
+                }
                 updateCartItem($productId, $quantity);
             }
         }
@@ -72,6 +76,9 @@ include __DIR__ . '/includes/header.php';
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0 fw-bold">Giỏ hàng</h3>
+        <a href="products.php" class="text-decoration-none">
+            <i class="fa fa-arrow-left me-2"></i>Tiếp tục mua sắm
+        </a>
     </div>
 
     <div class="row g-4">
@@ -109,8 +116,10 @@ include __DIR__ . '/includes/header.php';
                                 <div class="flex-grow-1 min-w-0">
                                     <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
                                         <div class="min-w-0">
-                                            <div class="fw-semibold product-name"><?php echo $name; ?></div>
-                                            <div class="small text-muted">Mã: <?php echo $id; ?></div>
+                                            <a class="fw-semibold product-name d-inline-block" href="product-detail.php?id=<?php echo $id; ?>">
+                                                <?php echo $name; ?>
+                                            </a>
+                                            <div class="small text-muted">Mã sản phẩm: <?php echo $id; ?></div>
                                         </div>
                                         <div class="flex-shrink-0">
                                             <div class="fw-bold product-price"><?php echo number_format($price); ?>đ</div>
@@ -120,11 +129,11 @@ include __DIR__ . '/includes/header.php';
                                     <div class="d-flex align-items-center gap-2 mt-2 mt-lg-3 cart-bottom-row">
                                         <div class="input-group cart-qty-group">
                                             <button type="button" class="btn btn-outline-secondary btn-sm qty-btn dec" onclick="handleQtyChange(<?php echo $id; ?>, -1)"><i class="fa fa-minus"></i></button>
-                                            <input type="number" class="form-control form-control-sm text-center qty-input" name="qty[<?php echo $id; ?>]" value="<?php echo $qty; ?>" min="1" onchange="scheduleCartUpdate()">
+                                            <input type="number" class="form-control form-ctrl-qty form-control-sm text-center qty-input" name="qty[<?php echo $id; ?>]" value="<?php echo $qty; ?>" min="1" max="100" inputmode="numeric" autocomplete="off">
                                             <button type="button" class="btn btn-outline-secondary btn-sm qty-btn inc" onclick="handleQtyChange(<?php echo $id; ?>, 1)"><i class="fa fa-plus"></i></button>
                                         </div>
 
-                                        <div class="cart-line-total fw-bold line-total">
+                                        <div class="cart-line-total fw-bold">
                                             <div class="small text-muted">Thành tiền</div>
                                             <div class="fw-bold line-total"><?php echo number_format($lineTotal); ?>đ</div>
                                         </div>
@@ -181,38 +190,55 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <script>
-    // Auto submit cart form khi số lượng thay đổi (debounce)
-    let cartUpdateTimer = null;
-
     function submitCartForm() {
         const form = document.getElementById('cartForm');
         if (!form) return;
         form.submit();
     }
 
-    function scheduleCartUpdate() {
-        clearTimeout(cartUpdateTimer);
-        cartUpdateTimer = setTimeout(() => {
-            submitCartForm();
-        }, 450);
+    function clampQty(val) {
+        // Cho phép trạng thái tạm thời khi đang gõ (rỗng)
+        if (val === '' || val === null || typeof val === 'undefined') return '';
+        let n = parseInt(val, 10);
+        if (Number.isNaN(n)) return '';
+        n = Math.max(1, Math.min(100, n));
+        return String(n);
     }
 
     function handleQtyChange(id, delta) {
         const input = document.querySelector('input[name="qty[' + id + ']"]');
         if (!input) return;
-        let value = parseInt(input.value) || 1;
-        value = Math.max(1, value + delta);
-        input.value = value;
-        scheduleCartUpdate();
+        const current = clampQty(input.value);
+        let value = parseInt(current === '' ? '1' : current, 10);
+        value = Math.max(1, Math.min(100, value + delta));
+        input.value = String(value);
+        submitCartForm();
     }
 
     document.querySelectorAll('.qty-input').forEach(input => {
+        // Không submit khi đang gõ để tránh reload lúc nhập 2+ chữ số
         input.addEventListener('input', () => {
-            // ensure minimum 1
-            let val = parseInt(input.value) || 1;
-            if (val < 1) val = 1;
-            input.value = val;
-            scheduleCartUpdate();
+            const v = input.value;
+            const clamped = clampQty(v);
+            // Chỉ sửa khi vượt max hoặc <1 hoặc có ký tự lạ; còn lại để người dùng gõ tự nhiên
+            if (clamped !== '' && clamped !== v && /^[0-9]+$/.test(v)) {
+                const num = parseInt(v, 10);
+                if (num > 100 || num < 1) input.value = clamped;
+            }
+        });
+
+        // Submit khi rời ô (blur) hoặc user nhấn Enter
+        input.addEventListener('blur', () => {
+            const clamped = clampQty(input.value);
+            input.value = clamped === '' ? '1' : clamped;
+            submitCartForm();
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                input.blur(); // sẽ trigger submit ở blur
+            }
         });
     });
 </script>

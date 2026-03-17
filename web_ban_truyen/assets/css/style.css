@@ -88,16 +88,16 @@ header {
     background-color: #dc3545;
     color: #fff;
     border-radius: 999px;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 4px;
-    font-size: 11px;
-    line-height: 18px;
+    min-width: 15px;
+    height: 10px;
+    padding: 0 2px;
+    font-size: 10px;
+    line-height: 15px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    box-shadow: 0 0 0 2px #343a40; /* viền cùng màu navbar */
+    box-shadow: 0 0 0 1px #343a40; 
 }
 
 /* ===== INDEX ===== */
@@ -288,6 +288,11 @@ header {
 #quantity {
     -moz-appearance: textfield;
 }
+
+.introduce-title{
+    color: #8B4513;
+}
+
 /* ===== FOOTER ===== */
 footer {
     background: #222;
@@ -296,3 +301,4 @@ footer {
     padding: 20px 0;
     margin-top: 40px;
 }
+
