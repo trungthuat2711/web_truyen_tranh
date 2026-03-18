@@ -48,16 +48,13 @@ if(isset($_POST['username']))
 <html lang="vi">
 
 <head>
-
     <meta charset="UTF-8">
     <title>Shop Truyện Tranh</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href=".\assets\css\style1.css">
-
 </head>
 
 <body class="d-flex flex-column min-vh-100 register-bg">
@@ -73,8 +70,11 @@ if(isset($_POST['username']))
             <ul class="navbar-nav d-flex flex-row gap-3">
 
                 <li class="nav-item">
-                    <a class="nav-link" href="cart.php">
-                        <i class="fa fa-cart-shopping" style="color: #eb7c26;"></i> Giỏ hàng
+                    <a class="nav-link cart-link" href="cart.php">
+                        <span>
+                            <i class="fa fa-cart-shopping" style="color: #eb7c26;"></i>
+                        </span> 
+                        <span class="ms-1">Giỏ hàng</span>
                     </a>
                 </li>
 

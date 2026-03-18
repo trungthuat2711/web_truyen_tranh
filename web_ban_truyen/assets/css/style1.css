@@ -1,6 +1,6 @@
 body{
     margin:0;
-    font-family:Arial;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background:#f5f5f5;
 }
 
@@ -10,7 +10,17 @@ body{
 }
 
 /* FORM LOGIN / REGISTER */
+.logo-name{
+    color: #eb7c26;
+}
 
+.logo-name:hover{
+    color: #eb7c26;
+}
+
+.nav-link:hover{
+    color: white;
+}
 .auth-box{
     max-width:500px;
     margin:120px auto;

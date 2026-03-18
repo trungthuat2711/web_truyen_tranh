@@ -13,10 +13,14 @@ $ten_loai = $loai['ten_loai'];
 
 ?>
 <div class="row d-flex justify-content-center">
+    
     <!--  -->
     <div class="col-md-10">
-
-        <div class="bg-white p-3 mb-5 product-detail">
+        <a href="products.php" class="text-decoration-none">
+            <i class="fa fa-arrow-left"></i>
+            Quay lại trang sản phẩm 
+        </a>
+        <div class="bg-white p-3  mt-3 mb-5 product-detail">
 
             <div class="row">
 
