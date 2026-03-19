@@ -4,7 +4,14 @@ require __DIR__ . '/config/database.php';
 require __DIR__ . '/includes/cart_functions.php';
 
 $flashMessage = getFlash();
-$cart = getCart();
+
+// Single-purchase params (from "Mua ngay" button)
+$singleProductId = (int)($_GET['product_id'] ?? $_POST['product_id'] ?? 0);
+$singleQuantity = max(1, (int)($_GET['quantity'] ?? $_POST['quantity'] ?? 1));
+$singleMode = $singleProductId > 0;
+
+$cart = [];
+$productsById = [];
 
 // Xác định tài khoản khách hàng (nếu đã đăng nhập)
 $currentUserId = null;
@@ -12,32 +19,58 @@ if (!empty($_SESSION['user']) && isset($_SESSION['user']['ma_tk'])) {
     $currentUserId = (int)$_SESSION['user']['ma_tk'];
 }
 
-// Load product data for the items in the cart
-$productIds = array_column($cart, 'id');
-$productsById = [];
-if (!empty($productIds)) {
-    $placeholders = implode(',', array_fill(0, count($productIds), '?'));
-    $types = str_repeat('i', count($productIds));
-    $stmt = $conn->prepare("SELECT ma_sp, ten_sp, gia, anh_sp FROM san_pham WHERE ma_sp IN ($placeholders)");
+if ($singleMode) {
+    $stmt = $conn->prepare('SELECT ma_sp, ten_sp, gia, anh_sp FROM san_pham WHERE ma_sp = ? AND trang_thai = 1 LIMIT 1');
     if ($stmt) {
-        $stmt->bind_param($types, ...$productIds);
+        $stmt->bind_param('i', $singleProductId);
         $stmt->execute();
-        $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) {
-            $productsById[(int)$row['ma_sp']] = $row;
-        }
+        $product = $stmt->get_result()->fetch_assoc();
         $stmt->close();
+    } else {
+        $product = null;
+    }
+
+    if (!$product) {
+        flash('Sản phẩm không tồn tại hoặc đã hết hàng.');
+        header('Location: product-detail.php?id=' . (int)$singleProductId);
+        exit;
+    }
+
+    $cart = [
+        ['id' => (int)$singleProductId, 'qty' => (int)$singleQuantity],
+    ];
+    $productsById[(int)$singleProductId] = $product;
+} else {
+    // Load product data for the items in the cart
+    $cart = getCart();
+    $productIds = array_column($cart, 'id');
+
+    if (!empty($productIds)) {
+        $placeholders = implode(',', array_fill(0, count($productIds), '?'));
+        $types = str_repeat('i', count($productIds));
+        $stmt = $conn->prepare("SELECT ma_sp, ten_sp, gia, anh_sp FROM san_pham WHERE ma_sp IN ($placeholders)");
+        if ($stmt) {
+            $stmt->bind_param($types, ...$productIds);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                $productsById[(int)$row['ma_sp']] = $row;
+            }
+            $stmt->close();
+        }
+    }
+
+    $totals = calculateCartTotals($productsById, $cart);
+
+    // Nếu giỏ hàng trống thì không cho vào checkout
+    if (empty($cart) || empty($productsById)) {
+        flash('Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.');
+        header('Location: cart.php');
+        exit;
     }
 }
 
 $totals = calculateCartTotals($productsById, $cart);
-
-// Nếu giỏ hàng trống thì không cho vào checkout
-if (empty($cart) || empty($productsById)) {
-    flash('Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.');
-    header('Location: cart.php');
-    exit;
-}
 
 $errors = [];
 $values = [
@@ -49,10 +82,28 @@ $values = [
     'payment' => 'cod',
 ];
 
+// Auto-fill user info from `tai_khoan` when logged in
+if ($currentUserId !== null) {
+    $stmt = $conn->prepare('SELECT ho_ten, email, so_dien_thoai, dia_chi FROM tai_khoan WHERE ma_tk = ? LIMIT 1');
+    if ($stmt) {
+        $stmt->bind_param('i', $currentUserId);
+        $stmt->execute();
+        $userRow = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if ($userRow) {
+            $values['fullname'] = $userRow['ho_ten'] ?? $values['fullname'];
+            $values['email'] = $userRow['email'] ?? $values['email'];
+            $values['phone'] = $userRow['so_dien_thoai'] ?? $values['phone'];
+            $values['address'] = $userRow['dia_chi'] ?? $values['address'];
+        }
+    }
+}
+
 $orderPlaced = false;
 $orderId = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     $values['fullname'] = trim($_POST['fullname'] ?? '');
     $values['email'] = trim($_POST['email'] ?? '');
     $values['phone'] = trim($_POST['phone'] ?? '');
@@ -111,7 +162,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $stmtItem->close();
 
-            clearCart();
+            if (!$singleMode) {
+                clearCart();
+            }
             header('Location: thankyou.php?orderId=' . $orderId . '&email=' . urlencode($values['email']));
             exit;
         } else {
@@ -150,9 +203,15 @@ include __DIR__ . '/includes/header.php';
                 <div class="card p-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="mb-0">Thanh toán</h4>
-                        <a href="cart.php" class="btn btn-sm btn-light">
-                            <i class="fa fa-arrow-left me-2"></i>Quay lại giỏ hàng
-                        </a>
+                        <?php if ($singleMode): ?>
+                            <a href="product-detail.php?id=<?php echo (int)$singleProductId; ?>" class="btn btn-sm btn-light">
+                                <i class="fa fa-arrow-left me-2"></i>Quay lại sản phẩm
+                            </a>
+                        <?php else: ?>
+                            <a href="cart.php" class="btn btn-sm btn-light">
+                                <i class="fa fa-arrow-left me-2"></i>Quay lại giỏ hàng
+                            </a>
+                        <?php endif; ?>
                     </div>
 
                     <?php if (!empty($errors['general'])): ?>
@@ -162,6 +221,11 @@ include __DIR__ . '/includes/header.php';
                     <?php endif; ?>
 
                     <form method="post" novalidate>
+                        <input type="hidden" name="place_order" value="1">
+                        <?php if ($singleMode): ?>
+                            <input type="hidden" name="product_id" value="<?php echo (int)$singleProductId; ?>">
+                            <input type="hidden" name="quantity" value="<?php echo (int)$singleQuantity; ?>">
+                        <?php endif; ?>
                         <div class="card p-4 mb-4">
                             <h6 class="section-title">Thông tin khách hàng</h6>
 

@@ -26,6 +26,20 @@ minusButton.addEventListener("click", () => {
     }
 });
 
-// Đồng bộ số lượng khi submit form (để chắc chắn)
+qtyInput.addEventListener("keydown", (e) => {
+    const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+    if (allowed.includes(e.key)) return;
+    if (!/^\d$/.test(e.key)) e.preventDefault();
+});
+
+qtyInput.addEventListener("input", () => {
+    qtyInput.value = qtyInput.value.replace(/[^0-9]/g, "");
+});
+
+qtyInput.addEventListener("change", () => {
+    syncQuantity();
+});
+
+
 document.getElementById("form-add-cart")?.addEventListener("submit", syncQuantity);
 document.getElementById("form-buy-now")?.addEventListener("submit", syncQuantity);

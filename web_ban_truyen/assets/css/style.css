@@ -289,9 +289,15 @@ header {
     -moz-appearance: textfield;
 }
 
+.out-of-stock{
+    color: #f15c22;
+    font-weight: bold;
+}
+
 .introduce-title{
     color: #8B4513;
 }
+
 
 /* ===== FOOTER ===== */
 footer {
@@ -301,4 +307,3 @@ footer {
     padding: 20px 0;
     margin-top: 40px;
 }
-

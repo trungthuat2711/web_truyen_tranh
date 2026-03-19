@@ -2,7 +2,7 @@
 require "config/database.php";
 include "includes/header.php";
 
-$where = "WHERE trang_thai = 1";
+$where = "WHERE trang_thai IN(0,1)";
 
 $order = "ORDER BY ma_sp DESC";
 if(isset($_GET['sort'])){
@@ -90,7 +90,6 @@ $result = $conn->query("SELECT * FROM san_pham $where $order LIMIT $limit OFFSET
             </div>
 
             <div class="list-group list-group-flush">
-
                 <?php while($loai = $ds_loai->fetch_assoc()) { ?>
                 <a href="products.php?ma_loai=<?php echo $loai['ma_loai']; ?>
                 <?php if(isset($_GET['gia'])) echo '&gia='.$_GET['gia'];?>

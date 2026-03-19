@@ -13,12 +13,12 @@ $ten_loai = $loai['ten_loai'];
 
 ?>
 <div class="row d-flex justify-content-center">
-    
+
     <!--  -->
     <div class="col-md-10">
-        <a href="products.php" class="text-decoration-none">
+        <a href="products.php" onclick="history.back(); return false;" class="text-decoration-none">
             <i class="fa fa-arrow-left"></i>
-            Quay lại trang sản phẩm 
+            Quay lại
         </a>
         <div class="bg-white p-3  mt-3 mb-5 product-detail">
 
@@ -48,6 +48,13 @@ $ten_loai = $loai['ten_loai'];
                         </span>
                     </p>
 
+                    <p class="status mb-2">
+                        <span style="opacity: 0.7;">Số lượng tồn:</span>
+                        <span class="status-value">
+                            <?php echo $row['so_luong_ton']; ?>
+                        </span>
+                    </p>
+
                     <p class="category mb-3">
                         Thể loại:
                         <span class="category-name"><?php echo $ten_loai; ?></span>
@@ -59,12 +66,16 @@ $ten_loai = $loai['ten_loai'];
 
                         <div class="quantity">
                             <button type="button" class="qty-btn minus" style="border-right: 1px solid #ddd">-</button>
-                            <input id="quantity" name="quantity" type="number" min="1" value="1">
+                            <input id="quantity" name="quantity" type="number" min="1" max="100" value="1">
                             <button type="button" class="qty-btn plus" style="border-left: 1px solid #ddd">+</button>
                         </div>
                     </div>
 
+                    <?php if($row['trang_thai']){ ?>
+
+                    <!-- Còn hàng -->
                     <div class="product-buttons">
+
                         <form action="add-to-cart.php" method="POST" id="form-add-cart" class="d-inline">
                             <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
                             <input type="hidden" name="quantity" id="qty-add-cart" value="1">
@@ -72,14 +83,26 @@ $ten_loai = $loai['ten_loai'];
                                 THÊM VÀO GIỎ HÀNG
                             </button>
                         </form>
-                        <form action="checkout-single.php" method="POST" id="form-buy-now" class="d-inline">
-                        <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
+
+                        <form action="checkout.php" method="GET" id="form-buy-now" class="d-inline">
+                            <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
                             <input type="hidden" name="quantity" id="qty-buy-now" value="1">
                             <button type="submit" class="btn-buy">
                                 MUA NGAY
                             </button>
                         </form>
+
                     </div>
+
+                    <?php } else { ?>
+
+                    <!-- hết hàng -->
+                    <p class="out-of-stock mb-2">
+                        <i class="fa fa-bullhorn"></i>
+                        Sản phẩm hiện đã hết hàng!
+                    </p>
+
+                    <?php } ?>
 
                     <p class="hotline-detail">
                         Gọi đặt hàng:

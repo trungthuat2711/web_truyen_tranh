@@ -76,8 +76,8 @@ include __DIR__ . '/includes/header.php';
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0 fw-bold">Giỏ hàng</h3>
-        <a href="products.php" class="text-decoration-none">
-            <i class="fa fa-arrow-left me-2"></i>Tiếp tục mua sắm
+        <a href="products.php" onclick="history.back(); return false;" class="text-decoration-none">
+            <i class="fa fa-arrow-left me-2"></i>Quay lại
         </a>
     </div>
 
