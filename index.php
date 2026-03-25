@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/check_role.php';
+checkNotAdmin();
 require "config/database.php";
-checkAdmin('admin');
 include "includes/header.php";
 
 // Lấy danh mục
