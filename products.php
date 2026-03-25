@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/check_role.php';
+checkAdmin('admin');
 require "config/database.php";
 include "includes/header.php";
 

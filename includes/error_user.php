@@ -37,7 +37,7 @@
 
 <body>
     <div class="marquee">
-        <a href="/web_ban_truyen/index.php">QUAY VỀ TRANG CHỦ !!!</a>
+        <a href="/web_truyen_tranh/index.php">QUAY VỀ TRANG CHỦ !!!</a>
     </div>
 </body>
 

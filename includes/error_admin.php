@@ -37,7 +37,7 @@
 
 <body>
     <div class="marquee">
-        <a href="/web_ban_truyen/admin.php">QUAY VỀ TRANG ADMIN !!!</a>
+        <a href="/web_truyen_tranh/admin.php">QUAY VỀ TRANG ADMIN !!!</a>
     </div>
 </body>
 
