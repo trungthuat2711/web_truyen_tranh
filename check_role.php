@@ -13,8 +13,8 @@ function checkRole($role){
     }
 }  
 
-function checkNotAdmin(){
-    if($_SESSION['user']['vai_tro'] == 'admin'){
+function checkAdmin($role){
+    if($_SESSION['user']['vai_tro'] == $role){
         header("Location: http://localhost/web_ban_truyen/includes/error_admin.php");
         exit();
     }
