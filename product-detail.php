@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/check_role.php';
-checkNotAdmin();
 require "config/database.php";
 require __DIR__ . '/includes/cart_functions.php';
 include "includes/header.php";
