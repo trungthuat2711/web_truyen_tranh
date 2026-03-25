@@ -1,0 +1,61 @@
+<?php
+require_once __DIR__ . '/check_login.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/cart_functions.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: index.php');
+    exit;
+}
+
+$referer = (isset($_SERVER['HTTP_REFERER']) && parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) === ($_SERVER['HTTP_HOST'] ?? ''))
+    ? $_SERVER['HTTP_REFERER']
+    : 'index.php';
+
+$productId = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
+$quantity  = isset($_POST['quantity'])   ? (int)$_POST['quantity']   : 1;
+$quantity  = max(1, $quantity);
+
+// Lấy thêm so_luong_ton, bỏ store_result()
+$stmt = $conn->prepare('SELECT ma_sp, so_luong_ton FROM san_pham WHERE ma_sp = ? AND trang_thai = 1 LIMIT 1');
+$stmt->bind_param('i', $productId);
+$stmt->execute();
+$product = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+if (!$product) {
+    flash('Sản phẩm không tồn tại hoặc đã bị gỡ.','danger');
+    header('Location: index.php');
+    exit;
+}
+
+$maxStock = (int)$product['so_luong_ton'];
+if ($maxStock <= 0) {
+    flash('Sản phẩm hiện đã hết hàng.', 'danger');
+    header('Location: ' . $referer);
+    exit;
+}
+
+$inCart = 0;
+foreach (getCart() as $item) {
+    if ((int)$item['id'] === $productId) {
+        $inCart = (int)$item['qty'];
+        break;
+    }
+}
+
+if (($inCart + $quantity) > $maxStock) {
+    $remain = max(0, $maxStock - $inCart);
+    if ($remain <= 0) {
+        flash("Đã đủ số lượng tối đa trong giỏ ({$maxStock} sản phẩm theo tồn kho).", 'danger');
+    } else {
+        flash("Số lượng vượt quá hàng tồn kho! Trong giỏ đã có {$inCart}, chỉ có thể thêm tối đa {$remain} (tồn kho: {$maxStock}).", 'danger');
+    }
+    header('Location: ' . $referer);
+    exit;
+}
+
+addToCart($productId, $quantity);
+flash('Đã thêm sản phẩm vào giỏ hàng.');
+header('Location: ' . $referer);
+exit;

@@ -1,0 +1,168 @@
+<?php
+require_once __DIR__ . '/check_role.php';
+checkNotAdmin();
+require "config/database.php";
+require __DIR__ . '/includes/cart_functions.php';
+include "includes/header.php";
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+}
+
+$result = $conn->query("SELECT * FROM san_pham WHERE ma_sp = $id");
+$row = $result->fetch_assoc();
+$loai = $conn->query("SELECT * FROM loai_sp WHERE ma_loai = $row[ma_loai]")->fetch_assoc();
+$ten_loai = $loai['ten_loai'];
+$flashMessage = getFlash();
+$isInStock = ((int)$row['trang_thai'] === 1 && (int)$row['so_luong_ton'] > 0);
+
+?>
+<div class="row d-flex justify-content-center">
+
+    <!--  -->
+    <div class="col-md-10">
+        <?php if (!empty($flashMessage)): ?>
+        <div class="alert alert-<?php echo htmlspecialchars($flashMessage[1]); ?>" role="alert">
+            <?php echo htmlspecialchars($flashMessage[0]); ?>
+        </div>
+        <?php endif; ?>
+        <a href="products.php" onclick="history.back(); return false;" class="text-decoration-none">
+            <i class="fa fa-arrow-left"></i>
+            Quay lại
+        </a>
+        <div class="bg-white p-3  mt-3 mb-5 product-detail">
+
+            <div class="row">
+
+                <div class="col-md-5 text-center">
+                    <img src="uploads/big_<?php echo $row['anh_sp']; ?>" class="img-fluid product-image">
+                </div>
+
+                <div class="col-md-7 mt-md-0 mt-3">
+
+                    <h1 class="title"><?php echo $row['ten_sp']; ?></h1>
+
+                    <div class="mb-2">
+                        <span class="author"><?php echo $row['tac_gia']; ?></span>
+                        <small>(Tác giả)</small>
+                    </div>
+
+                    <p class="price mb-1">
+                        <?php echo number_format($row['gia']); ?> đ
+                    </p>
+
+                    <p class="status mb-2">
+                        <span style="opacity: 0.7;">Tình trạng:</span>
+                        <span class="status-value">
+                            <?php echo $row['trang_thai'] ? "Còn hàng" : "Hết hàng"; ?>
+                        </span>
+                    </p>
+
+                    <p class="status mb-2">
+                        <span style="opacity: 0.7;">Số lượng tồn:</span>
+                        <span class="status-value">
+                            <?php echo $row['so_luong_ton']; ?>
+                        </span>
+                    </p>
+
+                    <p class="category mb-3">
+                        Thể loại:
+                        <span class="category-name"><?php echo $ten_loai; ?></span>
+                    </p>
+                    <hr class="d-lg-none d-block">
+
+                    <div class="quantity-box">
+                        <span>Số lượng:</span>
+
+                        <div class="quantity">
+                            <button type="button" class="qty-btn minus" style="border-right: 1px solid #ddd">-</button>
+                            <input id="quantity" name="quantity" type="number" min="1"
+                                max="<?php echo max(1, (int)$row['so_luong_ton']); ?>" value="1">
+                            <button type="button" class="qty-btn plus" style="border-left: 1px solid #ddd">+</button>
+                        </div>
+                    </div>
+
+                    <?php if ($isInStock) { ?>
+
+                    <!-- Còn hàng -->
+                    <div class="product-buttons">
+
+                        <form action="add-to-cart.php" method="POST" id="form-add-cart" class="d-inline">
+                            <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
+                            <input type="hidden" name="quantity" id="qty-add-cart" value="1">
+                            <button type="submit" class="btn-add">
+                                THÊM VÀO GIỎ HÀNG
+                            </button>
+                        </form>
+
+                        <form action="checkout.php" method="GET" id="form-buy-now" class="d-inline">
+                            <input type="hidden" name="product_id" value="<?php echo $row['ma_sp']; ?>">
+                            <input type="hidden" name="quantity" id="qty-buy-now" value="1">
+                            <button type="submit" class="btn-buy">
+                                MUA NGAY
+                            </button>
+                        </form>
+
+                    </div>
+
+                    <?php } else { ?>
+
+                    <!-- hết hàng -->
+                    <p class="out-of-stock mb-2">
+                        <i class="fa fa-bullhorn"></i>
+                        Sản phẩm hiện đã hết hàng!
+                    </p>
+
+                    <?php } ?>
+
+                    <p class="hotline-detail">
+                        Gọi đặt hàng:
+                        <span>0123 456 789</span>
+                        hoặc
+                        <span>0909 123 456</span>
+                    </p>
+
+                    <div class="product-extra">
+
+                        <h5>Thông tin & Khuyến mãi</h5>
+
+                        <p style="margin-bottom: 10px;">Đổi trả hàng trong vòng 7 ngày</p>
+
+                        <p style="margin-bottom: 10px;">Freeship toàn quốc từ 250.000đ</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Giới thiệu sp -->
+    <div class="col-md-10">
+
+        <div class="bg-white p-3 mb-5 product-detail">
+
+            <div class="row">
+
+                <div class="col-md-12 text-center mt-3 mb-4">
+                    <p class="float-start fs-4 fw-bold">Giới thiệu sản phẩm</p>
+                </div>
+
+                <div class="col-md-12 text-center mb-2">
+                    <p class="fs-4 fw-bold introduce-title"><?php echo $row['ten_sp']; ?></p>
+                </div>
+
+                <div class="col-md-12 text-start">
+                    <p class="fs-6 lh-lg"><?php echo $row['mo_ta']; ?></p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<?php include "includes/footer.php"; ?>
